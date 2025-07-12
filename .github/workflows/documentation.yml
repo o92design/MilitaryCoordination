@@ -342,7 +342,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     needs: [generate-javadoc, validate-markdown]
-    continue-on-error: true  # Allow failure if Pages not enabled
+    continue-on-error: true # Allow failure if Pages not enabled
 
     steps:
       - name: Checkout code

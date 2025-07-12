@@ -145,8 +145,8 @@ jobs:
 
       - name: Check for updates
         run: |
-          mvn versions:display-dependency-updates \
-            mvn versions:display-plugin-updates
+          mvn versions:display-dependency-updates
+          mvn versions:display-plugin-updates
 
       - name: Generate dependency tree
         run: mvn dependency:tree > dependency-tree.txt
@@ -169,12 +169,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check for Java source files
+        id: check-java
+        run: |
+          if find src/main/java -name "*.java" 2>/dev/null | grep -q .; then
+            echo "java_files_found=true" >> $GITHUB_OUTPUT
+            echo "✅ Java source files found - running CodeQL analysis"
+          else
+            echo "java_files_found=false" >> $GITHUB_OUTPUT
+            echo "⚠️ No Java source files found - skipping CodeQL analysis"
+          fi
+
       - name: Initialize CodeQL
+        if: steps.check-java.outputs.java_files_found == 'true'
         uses: github/codeql-action/init@v3
         with:
           languages: java
 
       - name: Set up JDK 21
+        if: steps.check-java.outputs.java_files_found == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: 21
@@ -182,40 +195,68 @@ jobs:
           cache: maven
 
       - name: Build for CodeQL
+        if: steps.check-java.outputs.java_files_found == 'true'
         run: mvn clean compile -B
 
       - name: Perform CodeQL Analysis
+        if: steps.check-java.outputs.java_files_found == 'true'
         uses: github/codeql-action/analyze@v3
+
+      - name: Skip CodeQL (No Java files)
+        if: steps.check-java.outputs.java_files_found == 'false'
+        run: |
+          echo "📝 CodeQL analysis skipped - no Java source files found yet"
+          echo "This is normal for projects in the setup phase"
+          echo "CodeQL will run automatically once you add Java source files"
 
   create-security-issue:
     name: Create Security Issues
     runs-on: ubuntu-latest
     needs: [dependency-check, codeql-analysis]
-    if: failure()
+    if: always() && (needs.dependency-check.result == 'failure' || needs.codeql-analysis.result == 'failure')
 
     steps:
       - name: Create issue for security findings
         uses: actions/github-script@v7
         with:
           script: |
+            const dependencyResult = '${{ needs.dependency-check.result }}';
+            const codeqlResult = '${{ needs.codeql-analysis.result }}';
+            
+            let issueBody = `
+            ## Security Alert
+
+            Security vulnerabilities or issues were detected in the latest security scan.
+
+            **Scan Results:**
+            - Dependency Check: ${dependencyResult}
+            - CodeQL Analysis: ${codeqlResult}
+
+            **Action Required:**`;
+            
+            if (dependencyResult === 'failure') {
+              issueBody += `
+            1. Review the dependency vulnerability scan results in the workflow artifacts
+            2. Update dependencies if vulnerabilities are found`;
+            }
+            
+            if (codeqlResult === 'failure') {
+              issueBody += `
+            3. Review CodeQL findings for potential security issues in source code`;
+            }
+            
+            issueBody += `
+            4. Close this issue once all security concerns are addressed
+
+            **Workflow:** ${{ github.workflow }}
+            **Run:** ${{ github.run_number }}
+            **Commit:** ${{ github.sha }}
+            `;
+
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🔒 Security vulnerabilities detected',
-              body: `
-              ## Security Alert
-
-              Security vulnerabilities or issues were detected in the latest security scan.
-
-              **Action Required:**
-              1. Review the security scan results in the workflow artifacts
-              2. Update dependencies if vulnerabilities are found
-              3. Review CodeQL findings for potential security issues
-              4. Close this issue once all security concerns are addressed
-
-              **Workflow:** ${context.workflow}
-              **Run:** ${context.runNumber}
-              **Commit:** ${context.sha}
-              `,
+              body: issueBody,
               labels: ['security', 'high']
             })

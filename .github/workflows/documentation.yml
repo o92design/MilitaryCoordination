@@ -137,6 +137,9 @@ jobs:
 
       - name: Generate documentation index
         run: |
+          # Create docs directory if it doesn't exist
+          mkdir -p docs
+          
           echo "# Documentation Index" > docs/INDEX.md
           echo "" >> docs/INDEX.md
           echo "This is an automatically generated index of all documentation." >> docs/INDEX.md

@@ -84,6 +84,30 @@ For development with IDE support:
    - Open the project folder
    - Use provided tasks in `.vscode/tasks.json`
 
+## 🔄 Development Workflow
+
+**Ready to contribute?** Follow our issue-based development workflow:
+
+1. **📋 [Development Workflow Guide](DEVELOPMENT_WORKFLOW.md)** - Complete guide for branch-based development
+2. **🤝 [Contributing Guidelines](.github/CONTRIBUTING.md)** - Code style, testing, and PR process
+3. **⚙️ [Development Setup](DEVELOPMENT.md)** - Maven, VS Code, and build configuration
+
+### Quick Start for New Contributors:
+```bash
+# Pick an issue from Epic 2 (Issues #8, #9, #10, #11)
+git checkout -b feature/issue-8-position-coordinate-system
+
+# Develop using TDD
+mvn test  # Write failing tests first
+# Implement feature
+mvn clean test checkstyle:check  # Validate your work
+
+# Create PR when ready
+git push origin feature/issue-8-position-coordinate-system
+```
+
+**Current Focus**: Epic 2 - Core Data Models (Issues #8-#11)
+
 ## 🛠️ Technology Stack
 
 | Component | Technology | Version |

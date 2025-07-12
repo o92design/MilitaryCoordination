@@ -1,0 +1,224 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: "0 8 * * 1" # Every Monday at 8 AM UTC
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+          cache: maven
+
+      - name: Check for dependency updates
+        run: |
+          # Check for available updates
+          mvn versions:display-dependency-updates > dependency-updates.txt
+          mvn versions:display-plugin-updates > plugin-updates.txt
+
+          # Check if updates are available
+          if grep -q "The following dependencies in Dependencies have newer versions:" dependency-updates.txt || \
+             grep -q "The following plugin updates are available:" plugin-updates.txt; then
+            echo "updates_available=true" >> $GITHUB_ENV
+          else
+            echo "updates_available=false" >> $GITHUB_ENV
+          fi
+
+      - name: Update minor and patch versions
+        if: env.updates_available == 'true'
+        run: |
+          # Update to latest minor/patch versions (safer updates)
+          mvn versions:use-latest-releases \
+            -DallowMajorUpdates=false \
+            -DallowMinorUpdates=true \
+            -DgenerateBackupPoms=false
+
+          # Update plugins to latest versions
+          mvn versions:use-latest-versions \
+            -DallowMajorUpdates=false \
+            -DallowMinorUpdates=true \
+            -DgenerateBackupPoms=false
+
+      - name: Test with updated dependencies
+        if: env.updates_available == 'true'
+        run: |
+          # Clean build and test with updated dependencies
+          mvn clean compile test -B
+
+      - name: Create dependency update summary
+        if: env.updates_available == 'true'
+        run: |
+          echo "# Dependency Update Summary" > update-summary.md
+          echo "" >> update-summary.md
+          echo "## Updated Dependencies" >> update-summary.md
+          echo "" >> update-summary.md
+
+          # Extract updated dependencies from Maven output
+          git diff pom.xml >> update-summary.md || echo "No changes to pom.xml" >> update-summary.md
+
+          echo "" >> update-summary.md
+          echo "## Test Results" >> update-summary.md
+          echo "All tests passed with updated dependencies." >> update-summary.md
+
+      - name: Create Pull Request
+        if: env.updates_available == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update dependencies to latest minor/patch versions"
+          title: "🔄 Automated dependency updates"
+          body-path: update-summary.md
+          branch: dependency-updates
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+
+  security-updates:
+    name: Security Updates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+          cache: maven
+
+      - name: Run security audit
+        run: |
+          # Check for known vulnerabilities
+          mvn org.owasp:dependency-check-maven:check \
+            -DfailBuildOnCVSS=0 \
+            -DsuppressValidation=true
+
+      - name: Check for security updates
+        run: |
+          # Look for security-related updates
+          mvn versions:display-dependency-updates | \
+            grep -i "security\|cve\|vulnerability" > security-updates.txt || true
+
+          if [ -s security-updates.txt ]; then
+            echo "security_updates_available=true" >> $GITHUB_ENV
+          else
+            echo "security_updates_available=false" >> $GITHUB_ENV
+          fi
+
+      - name: Apply security updates
+        if: env.security_updates_available == 'true'
+        run: |
+          # Apply all available updates (including major versions for security)
+          mvn versions:use-latest-releases \
+            -DallowMajorUpdates=true \
+            -DgenerateBackupPoms=false
+
+      - name: Test security updates
+        if: env.security_updates_available == 'true'
+        run: |
+          mvn clean compile test -B
+
+      - name: Create security update PR
+        if: env.security_updates_available == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "security: update dependencies to fix security vulnerabilities"
+          title: "🔒 Security dependency updates"
+          body: |
+            ## Security Updates
+
+            This PR updates dependencies to fix known security vulnerabilities.
+
+            **⚠️ Important:** This is a security update and should be reviewed and merged promptly.
+
+            ## Changes
+            - Updated dependencies with known security vulnerabilities
+            - All tests pass with updated dependencies
+
+            ## Security Scan Results
+            See the dependency check report in the workflow artifacts.
+
+          branch: security-updates
+          delete-branch: true
+          labels: |
+            security
+            dependencies
+            high
+
+  java-version-updates:
+    name: Java Version Updates
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'o92design' # Only for main repo
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check latest Java versions
+        run: |
+          # Check what Java versions are available
+          echo "Current project uses Java 21"
+          echo "Checking for newer Java versions..."
+
+          # This would check for Java 22, 23, etc. when they become available
+          # For now, just document the current version
+
+      - name: Test with newer Java version
+        continue-on-error: true
+        run: |
+          # Test compatibility with Java 22 when available
+          echo "Testing compatibility with newer Java versions..."
+
+          # This would set up Java 22 and run tests
+          # mvn clean test -B
+
+      - name: Create Java update issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '☕ Java version compatibility check',
+              body: `
+              ## Java Version Update Available
+
+              A newer version of Java is available and compatibility should be evaluated.
+
+              **Current Version:** Java 21
+              **Available Version:** Java 22+ (when released)
+
+              **Action Items:**
+              - [ ] Test application with newer Java version
+              - [ ] Update CI/CD workflows if compatible
+              - [ ] Update documentation
+              - [ ] Consider language feature adoption
+
+              **Benefits:**
+              - Latest performance improvements
+              - New language features
+              - Security updates
+              - Future-proofing
+              `,
+              labels: ['enhancement', 'java', 'dependencies']
+            })

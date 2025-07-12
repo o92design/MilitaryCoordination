@@ -8,9 +8,9 @@ body:
     attributes:
       value: |
         ## Bug Report Template
-        
+
         Use this template to report bugs in the Military Coordination System.
-        
+
         Please provide as much detail as possible to help reproduce and fix the issue.
 
   - type: input

@@ -10,9 +10,9 @@ body:
     attributes:
       value: |
         ## Feature/Task Template
-        
+
         Use this template to create specific development tasks. Tasks should be small enough to complete in 1-3 days.
-        
+
         For data-oriented functional programming, consider:
         - Immutable data structures
         - Pure functions

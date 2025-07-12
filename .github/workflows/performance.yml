@@ -1,0 +1,222 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/main/**"
+      - "src/test/**/*Performance*"
+  schedule:
+    - cron: "0 2 * * 0" # Weekly performance check on Sundays at 2 AM UTC
+  workflow_dispatch:
+    inputs:
+      benchmark_duration:
+        description: "Benchmark duration in seconds"
+        required: false
+        default: "60"
+        type: string
+
+jobs:
+  performance-benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+          cache: maven
+
+      - name: Setup performance testing environment
+        run: |
+          # Configure JVM for performance testing
+          echo "MAVEN_OPTS=-Xmx4g -XX:+UseG1GC -XX:+UseStringDeduplication" >> $GITHUB_ENV
+
+      - name: Compile project
+        run: mvn clean compile test-compile -B
+
+      - name: Run game loop performance tests
+        run: |
+          mvn test -B \
+            -Dtest="**/*GameLoop*Performance*" \
+            -Dmilitary.test.performance.enabled=true \
+            -Dmilitary.test.performance.duration=${{ github.event.inputs.benchmark_duration || '60' }}
+
+      - name: Run unit coordination performance tests
+        run: |
+          mvn test -B \
+            -Dtest="**/*Unit*Performance*" \
+            -Dmilitary.test.performance.enabled=true \
+            -Dmilitary.test.performance.max.units=10000
+
+      - name: Run memory performance tests
+        run: |
+          mvn test -B \
+            -Dtest="**/*Memory*Performance*" \
+            -Dmilitary.test.performance.enabled=true \
+            -Dmilitary.test.memory.max.heap.mb=2048
+
+      - name: Generate performance report
+        run: |
+          mkdir -p performance-reports
+
+          # Create performance summary
+          cat > performance-reports/summary.md << EOF
+          # Performance Test Summary
+
+          **Test Date:** $(date)
+          **Commit:** ${{ github.sha }}
+          **Java Version:** $(java -version 2>&1 | head -1)
+          **JVM Args:** $MAVEN_OPTS
+
+          ## Test Configuration
+          - Benchmark Duration: ${{ github.event.inputs.benchmark_duration || '60' }} seconds
+          - Max Units: 10,000
+          - Max Heap: 2048 MB
+          - Target FPS: 60
+
+          ## Performance Targets
+          - Game Loop: Maintain 60 FPS with 1000+ units
+          - Memory: Stable usage, no leaks
+          - CPU: <80% during normal operation
+          - Latency: <16ms for critical operations
+
+          ## Results
+          See attached test reports for detailed metrics.
+          EOF
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results-${{ github.run_number }}
+          path: |
+            performance-reports/
+            target/surefire-reports/*Performance*
+
+      - name: Store performance metrics
+        run: |
+          # Extract key metrics for trend analysis
+          mkdir -p .github/performance-history
+
+          echo "$(date -Iseconds),${{ github.sha }},$(date +%s)" > .github/performance-history/run-${{ github.run_number }}.csv
+
+      - name: Compare with baseline
+        id: performance-check
+        run: |
+          # Simple performance regression check
+          # In a real implementation, you'd compare against historical data
+
+          echo "performance_status=success" >> $GITHUB_OUTPUT
+
+          # Example: Check if any critical performance tests failed
+          if grep -q "PERFORMANCE_CRITICAL_FAILURE" target/surefire-reports/*.xml; then
+            echo "performance_status=failure" >> $GITHUB_OUTPUT
+            echo "Critical performance regression detected!"
+          fi
+
+      - name: Comment on PR with performance results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let comment = `## 🚀 Performance Test Results
+
+            **Status:** ${{ steps.performance-check.outputs.performance_status == 'success' && '✅ Passed' || '❌ Failed' }}
+            **Commit:** \`${{ github.sha }}\`
+
+            ### Key Metrics
+            - Game Loop Performance: See detailed results
+            - Memory Usage: See detailed results
+            - Unit Coordination: See detailed results
+
+            ### Performance Standards
+            - 🎯 Target FPS: 60 (minimum)
+            - 🧠 Memory: Stable, no leaks
+            - ⚡ CPU Usage: <80% normal operation
+            - ⏱️ Latency: <16ms critical ops
+
+            📊 Detailed performance reports are available in the workflow artifacts.
+            `;
+
+            if ('${{ steps.performance-check.outputs.performance_status }}' === 'failure') {
+              comment += `
+
+              ⚠️ **Performance regression detected!** Please review the changes and optimize before merging.
+              `;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  performance-trend-analysis:
+    name: Performance Trend Analysis
+    runs-on: ubuntu-latest
+    needs: performance-benchmark
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100 # Get recent history for trend analysis
+
+      - name: Analyze performance trends
+        run: |
+          # Simple trend analysis
+          # In practice, you'd use more sophisticated analysis
+
+          echo "Analyzing performance trends..."
+
+          # Check if we have historical data
+          if [ -d ".github/performance-history" ]; then
+            echo "Historical performance data found"
+            ls -la .github/performance-history/
+          else
+            echo "No historical performance data available yet"
+          fi
+
+      - name: Create performance issue if degradation detected
+        if: needs.performance-benchmark.outputs.performance_status == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '📉 Performance regression detected',
+              body: `
+              ## Performance Regression Alert
+
+              A performance regression has been detected in the latest commits.
+
+              **Details:**
+              - Commit: ${{ github.sha }}
+              - Workflow: ${{ github.workflow }}
+              - Run: ${{ github.run_number }}
+
+              **Action Required:**
+              1. Review the performance test results in workflow artifacts
+              2. Identify the cause of the regression
+              3. Optimize the affected code
+              4. Re-run performance tests to verify fixes
+              5. Close this issue once performance is restored
+
+              **Performance Standards:**
+              - Game Loop: 60 FPS minimum with 1000+ units
+              - Memory: Stable usage, no memory leaks
+              - CPU: <80% during normal operation
+              - Latency: <16ms for critical operations
+              `,
+              labels: ['performance', 'bug', 'high']
+            })

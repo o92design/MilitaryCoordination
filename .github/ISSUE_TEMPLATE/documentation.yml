@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         ## Documentation Template
-        
+
         Use this template to request documentation improvements, additions, or corrections for the Military Coordination System.
 
   - type: input

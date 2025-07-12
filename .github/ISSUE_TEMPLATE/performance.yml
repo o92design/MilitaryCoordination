@@ -8,9 +8,9 @@ body:
     attributes:
       value: |
         ## Performance Issue Template
-        
+
         Use this template to report performance issues or suggest optimizations for the Military Coordination System.
-        
+
         For real-time systems, performance is critical. Please provide specific metrics when possible.
 
   - type: input
@@ -54,7 +54,7 @@ body:
       description: Which component has the performance issue?
       options:
         - "core"
-        - "model" 
+        - "model"
         - "engine - game loop"
         - "engine - state management"
         - "ai - unit behavior"
@@ -123,7 +123,7 @@ body:
       description: How severely does this affect the system?
       options:
         - "critical - system unusable"
-        - "high - significantly impacts user experience" 
+        - "high - significantly impacts user experience"
         - "medium - noticeable but manageable"
         - "low - minor performance concern"
     validations:

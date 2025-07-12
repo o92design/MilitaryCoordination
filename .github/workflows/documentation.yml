@@ -1,0 +1,401 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "src/**"
+      - "docs/**"
+      - "*.md"
+      - "pom.xml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "docs/**"
+      - "*.md"
+      - "pom.xml"
+  workflow_dispatch:
+
+jobs:
+  generate-javadoc:
+    name: Generate JavaDoc
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+          cache: maven
+
+      - name: Generate JavaDoc
+        run: |
+          mvn javadoc:javadoc -B
+
+      - name: Check JavaDoc coverage
+        run: |
+          # Check for missing JavaDoc comments
+          find src/main/java -name "*.java" -exec grep -L "\/\*\*" {} \; > missing-javadoc.txt || true
+
+          if [ -s missing-javadoc.txt ]; then
+            echo "⚠️ Files missing JavaDoc comments:"
+            cat missing-javadoc.txt
+            echo "javadoc_complete=false" >> $GITHUB_ENV
+          else
+            echo "✅ All Java files have JavaDoc comments"
+            echo "javadoc_complete=true" >> $GITHUB_ENV
+          fi
+
+      - name: Upload JavaDoc
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadoc
+          path: target/site/apidocs/
+          retention-days: 30
+
+      - name: Comment on PR with JavaDoc status
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const javadocComplete = '${{ env.javadoc_complete }}' === 'true';
+
+            let comment = '## 📚 JavaDoc Status\n\n';
+
+            if (javadocComplete) {
+              comment += '✅ All Java files have JavaDoc comments\n\n';
+            } else {
+              comment += '⚠️ Some files are missing JavaDoc comments:\n\n';
+              try {
+                const missingFiles = fs.readFileSync('missing-javadoc.txt', 'utf8');
+                comment += '```\n' + missingFiles + '```\n\n';
+              } catch (error) {
+                comment += 'Check the workflow logs for details.\n\n';
+              }
+              comment += 'Please add JavaDoc comments to improve code documentation.\n\n';
+            }
+
+            comment += '📖 [View Generated JavaDoc](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  validate-markdown:
+    name: Validate Markdown
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install markdown tools
+        run: |
+          npm install -g markdownlint-cli
+          npm install -g markdown-link-check
+
+      - name: Lint markdown files
+        run: |
+          # Create markdownlint config
+          cat > .markdownlint.json << 'EOF'
+          {
+            "MD013": { "line_length": 120 },
+            "MD033": false,
+            "MD041": false
+          }
+          EOF
+
+          # Lint all markdown files
+          markdownlint "**/*.md" --ignore node_modules || true
+
+      - name: Check markdown links
+        run: |
+          # Check all markdown files for broken links
+          find . -name "*.md" -not -path "./node_modules/*" \
+            -exec markdown-link-check {} \; || true
+
+      - name: Generate documentation index
+        run: |
+          echo "# Documentation Index" > docs/INDEX.md
+          echo "" >> docs/INDEX.md
+          echo "This is an automatically generated index of all documentation." >> docs/INDEX.md
+          echo "" >> docs/INDEX.md
+
+          echo "## Project Documentation" >> docs/INDEX.md
+          find . -name "*.md" -not -path "./node_modules/*" -not -name "INDEX.md" | \
+            sed 's|^\./||' | sort | \
+            while read file; do
+              title=$(head -n 1 "$file" | sed 's/^# //')
+              if [ -z "$title" ]; then
+                title=$(basename "$file" .md)
+              fi
+              echo "- [$title]($file)" >> docs/INDEX.md
+            done
+
+          echo "" >> docs/INDEX.md
+          echo "Generated on: $(date)" >> docs/INDEX.md
+
+      - name: Commit documentation updates
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/INDEX.md
+          git diff --staged --quiet || git commit -m "docs: update documentation index [skip ci]"
+          git push
+
+  check-readme:
+    name: Check README Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check README completeness
+        run: |
+          readme_score=0
+          total_checks=10
+
+          echo "📋 README.md Quality Check"
+          echo "=========================="
+
+          # Check for basic sections
+          if grep -q "# " README.md; then
+            echo "✅ Has main title"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing main title"
+          fi
+
+          if grep -qi "description\|overview" README.md; then
+            echo "✅ Has description/overview"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing description/overview"
+          fi
+
+          if grep -qi "installation\|setup\|getting started" README.md; then
+            echo "✅ Has installation/setup instructions"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing installation/setup instructions"
+          fi
+
+          if grep -qi "usage\|example\|how to" README.md; then
+            echo "✅ Has usage examples"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing usage examples"
+          fi
+
+          if grep -qi "contributing" README.md; then
+            echo "✅ Has contributing guidelines"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing contributing guidelines"
+          fi
+
+          if grep -qi "license" README.md; then
+            echo "✅ Has license information"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing license information"
+          fi
+
+          if grep -qi "requirements\|prerequisites" README.md; then
+            echo "✅ Has requirements/prerequisites"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing requirements/prerequisites"
+          fi
+
+          if grep -q "\!\[.*\]" README.md || grep -q "!\[.*\]" README.md; then
+            echo "✅ Has images/badges"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing images/badges"
+          fi
+
+          if [ $(wc -l < README.md) -gt 20 ]; then
+            echo "✅ Has substantial content (>20 lines)"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Too short (<20 lines)"
+          fi
+
+          if grep -qi "contact\|author\|maintainer" README.md; then
+            echo "✅ Has contact information"
+            readme_score=$((readme_score + 1))
+          else
+            echo "❌ Missing contact information"
+          fi
+
+          # Calculate score
+          percentage=$((readme_score * 100 / total_checks))
+          echo ""
+          echo "📊 README Score: $readme_score/$total_checks ($percentage%)"
+
+          if [ $percentage -ge 80 ]; then
+            echo "🎉 Excellent README!"
+          elif [ $percentage -ge 60 ]; then
+            echo "👍 Good README, could use some improvements"
+          else
+            echo "⚠️ README needs significant improvements"
+          fi
+
+          echo "readme_score=$percentage" >> $GITHUB_ENV
+
+      - name: Create README improvement issue
+        if: env.readme_score < 80 && github.ref == 'refs/heads/main'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const score = '${{ env.readme_score }}';
+
+            // Check if issue already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'documentation,readme',
+              state: 'open'
+            });
+
+            const existingIssue = issues.data.find(issue =>
+              issue.title.includes('README.md improvements')
+            );
+
+            if (!existingIssue) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '📝 README.md improvements needed',
+                body: `
+                ## README Quality Check Results
+
+                Current README score: **${score}%**
+
+                The README.md file could be improved to better serve users and contributors.
+
+                **Potential improvements:**
+                - [ ] Add comprehensive project description
+                - [ ] Include installation/setup instructions
+                - [ ] Add usage examples
+                - [ ] Include contributing guidelines
+                - [ ] Add license information
+                - [ ] List requirements/prerequisites
+                - [ ] Add project badges or images
+                - [ ] Include contact information
+                - [ ] Expand content with more details
+
+                **Benefits of a good README:**
+                - Better project discoverability
+                - Easier onboarding for new contributors
+                - Professional appearance
+                - Clear project purpose and goals
+
+                See the latest documentation workflow run for detailed feedback.
+                `,
+                labels: ['documentation', 'readme', 'good first issue']
+              });
+            }
+
+  deploy-docs:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [generate-javadoc, validate-markdown]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: "temurin"
+          cache: maven
+
+      - name: Generate JavaDoc
+        run: mvn javadoc:javadoc -B
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Build documentation site
+        run: |
+          mkdir -p docs-site
+
+          # Copy JavaDoc
+          cp -r target/site/apidocs docs-site/javadoc
+
+          # Copy markdown docs
+          find . -name "*.md" -not -path "./node_modules/*" -not -path "./docs-site/*" \
+            -exec cp {} docs-site/ \;
+
+          # Create index.html
+          cat > docs-site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Military Coordination - Documentation</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; }
+                  .header { border-bottom: 2px solid #333; padding-bottom: 20px; }
+                  .section { margin: 20px 0; }
+                  a { color: #0366d6; text-decoration: none; }
+                  a:hover { text-decoration: underline; }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>Military Coordination Documentation</h1>
+                  <p>A data-oriented functional programming approach to real-time military unit coordination.</p>
+              </div>
+
+              <div class="section">
+                  <h2>📚 API Documentation</h2>
+                  <p><a href="javadoc/index.html">JavaDoc API Reference</a></p>
+              </div>
+
+              <div class="section">
+                  <h2>📖 Project Documentation</h2>
+                  <ul>
+                      <li><a href="README.html">Project Overview</a></li>
+                      <li><a href="PROJECT_PLAN.html">Project Plan</a></li>
+                      <li><a href="TESTING_FRAMEWORK.html">Testing Framework</a></li>
+                      <li><a href="GITHUB_SETUP.html">GitHub Setup Guide</a></li>
+                  </ul>
+              </div>
+
+              <div class="section">
+                  <p><em>Documentation generated on: <script>document.write(new Date().toISOString().split('T')[0]);</script></em></p>
+              </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs-site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

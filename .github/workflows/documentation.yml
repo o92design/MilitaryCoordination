@@ -17,6 +17,13 @@ on:
       - "pom.xml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  id-token: write
+  issues: write
+
 jobs:
   generate-javadoc:
     name: Generate JavaDoc

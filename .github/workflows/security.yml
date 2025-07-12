@@ -10,6 +10,12 @@ on:
       - ".github/workflows/security.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+  security-events: write
+  issues: write
+  pull-requests: read
+
 jobs:
   dependency-check:
     name: Dependency Vulnerability Scan

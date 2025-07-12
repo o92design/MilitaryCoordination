@@ -16,6 +16,11 @@ on:
         default: "60"
         type: string
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   performance-benchmark:
     name: Performance Benchmark

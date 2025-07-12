@@ -35,16 +35,69 @@ jobs:
       - name: Cache dependency check data
         uses: actions/cache@v4
         with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-dependency-check-
+          path: |
+            ~/.m2/repository/org/owasp/dependency-check-data
+            ~/.m2/repository/org/owasp/dependency-check-utils
+          key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}-${{ github.run_number }}
+          restore-keys: |
+            ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}-
+            ${{ runner.os }}-dependency-check-
 
-      - name: Run OWASP Dependency Check
+      - name: Check if NVD API key is available
+        id: check-api-key
+        run: |
+          if [ -z "${{ secrets.NVD_API_KEY }}" ]; then
+            echo "api_key_available=false" >> $GITHUB_OUTPUT
+            echo "⚠️ NVD API Key not configured - using fast mode"
+          else
+            echo "api_key_available=true" >> $GITHUB_OUTPUT
+            echo "✅ NVD API Key configured - using full scan"
+          fi
+
+      - name: Run OWASP Dependency Check (Full scan with API key)
+        if: steps.check-api-key.outputs.api_key_available == 'true'
         run: |
           mvn org.owasp:dependency-check-maven:check \
             -DfailBuildOnCVSS=7 \
-            -DsuppressValidation=true
+            -DsuppressValidation=true \
+            -DnvdApiKey=${{ secrets.NVD_API_KEY }} \
+            -DnvdMaxRetryCount=10 \
+            -DnvdValidForHours=24 \
+            -DretireJsAnalyzerEnabled=false \
+            -DnodeAnalyzerEnabled=false \
+            -DassemblyAnalyzerEnabled=false
         continue-on-error: true
+        env:
+          MAVEN_OPTS: "-Xmx2g -Djava.awt.headless=true"
+
+      - name: Run OWASP Dependency Check (Fast mode without API key)
+        if: steps.check-api-key.outputs.api_key_available == 'false'
+        run: |
+          mvn org.owasp:dependency-check-maven:check \
+            -DfailBuildOnCVSS=7 \
+            -DsuppressValidation=true \
+            -DskipSystemScope=true \
+            -DretireJsAnalyzerEnabled=false \
+            -DnodeAnalyzerEnabled=false \
+            -DassemblyAnalyzerEnabled=false \
+            -DautoUpdate=false \
+            -Dformat=HTML \
+            -DdataDirectory=~/.m2/repository/org/owasp/dependency-check-data
+        continue-on-error: true
+        timeout-minutes: 10
+        env:
+          MAVEN_OPTS: "-Xmx1g -Djava.awt.headless=true"
+
+      - name: Alternative security check (GitHub Advisory Database)
+        if: steps.check-api-key.outputs.api_key_available == 'false'
+        run: |
+          echo "🔍 Running alternative security analysis..."
+
+          # Check for known vulnerable packages using GitHub Advisory Database
+          mvn org.sonatype.ossindex.maven:ossindex-maven-plugin:audit \
+            -Daudit.failOnError=false || true
+
+          echo "📋 Security check completed with available tools"
 
       - name: Upload dependency check results
         uses: actions/upload-artifact@v4

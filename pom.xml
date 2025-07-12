@@ -152,6 +152,28 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- OSS Index Plugin for Security Scanning (Alternative to OWASP when no API key) -->
+            <plugin>
+                <groupId>org.sonatype.ossindex.maven</groupId>
+                <artifactId>ossindex-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <reportFile>${project.build.directory}/ossindex-report.json</reportFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>audit-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>audit</goal>
+                        </goals>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

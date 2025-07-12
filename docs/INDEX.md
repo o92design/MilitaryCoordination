@@ -9,11 +9,10 @@ This is an automatically generated index of all documentation.
 - [Issue Templates Quick Reference](.github/ISSUE_TEMPLATE_REFERENCE.md)
 - [🔐 Security Configuration Guide](.github/SECURITY_SETUP.md)
 - [GitHub Actions Workflows](.github/WORKFLOWS.md)
-- [Development Setup Guide](DEVELOPMENT.md)
 - [Military Coordination System](README.md)
 - [## Epic Issues to Create](docs/GITHUB_SETUP.md)
 - [Project Management Plan](docs/PROJECT_PLAN.md)
 - [Documentation](docs/README.md)
 - [Military Coordination System - Testing Framework](docs/TESTING_FRAMEWORK.md)
 
-Generated on: Sat Jul 12 19:53:49 UTC 2025
+Generated on: Sat Jul 12 19:59:48 UTC 2025

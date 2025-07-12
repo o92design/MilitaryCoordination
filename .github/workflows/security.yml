@@ -222,7 +222,7 @@ jobs:
           script: |
             const dependencyResult = '${{ needs.dependency-check.result }}';
             const codeqlResult = '${{ needs.codeql-analysis.result }}';
-            
+
             let issueBody = `
             ## Security Alert
 
@@ -233,18 +233,18 @@ jobs:
             - CodeQL Analysis: ${codeqlResult}
 
             **Action Required:**`;
-            
+
             if (dependencyResult === 'failure') {
               issueBody += `
             1. Review the dependency vulnerability scan results in the workflow artifacts
             2. Update dependencies if vulnerabilities are found`;
             }
-            
+
             if (codeqlResult === 'failure') {
               issueBody += `
             3. Review CodeQL findings for potential security issues in source code`;
             }
-            
+
             issueBody += `
             4. Close this issue once all security concerns are addressed
 

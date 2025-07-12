@@ -51,12 +51,31 @@ jobs:
       - name: Compile code
         run: mvn clean compile -B
 
+      - name: Check for test files
+        id: check-tests
+        run: |
+          if find src/test/java -name "*.java" 2>/dev/null | grep -q .; then
+            echo "test_files_found=true" >> $GITHUB_OUTPUT
+            echo "✅ Test files found - running tests"
+          else
+            echo "test_files_found=false" >> $GITHUB_OUTPUT
+            echo "⚠️ No test files found - skipping tests"
+          fi
+
       - name: Run unit tests
+        if: steps.check-tests.outputs.test_files_found == 'true'
         run: mvn test -B
+
+      - name: Skip tests (No test files)
+        if: steps.check-tests.outputs.test_files_found == 'false'
+        run: |
+          echo "📝 Unit tests skipped - no test files found yet"
+          echo "This is normal for projects in the setup phase"
+          echo "Tests will run automatically once you add test files to src/test/java"
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
+        if: (success() || failure()) && steps.check-tests.outputs.test_files_found == 'true'
         with:
           name: Maven Tests (Java ${{ matrix.java-version }})
           path: target/surefire-reports/*.xml
@@ -65,7 +84,7 @@ jobs:
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.check-tests.outputs.test_files_found == 'true'
         with:
           name: test-results-java-${{ matrix.java-version }}
           path: |
@@ -106,7 +125,16 @@ jobs:
         continue-on-error: true
 
       - name: Generate code coverage
-        run: mvn jacoco:report -B
+        run: |
+          # Only run coverage if we have test files
+          if find src/test/java -name "*.java" 2>/dev/null | grep -q .; then
+            mvn jacoco:report -B
+          else
+            echo "📊 Code coverage skipped - no test files found"
+            # Create empty coverage report to avoid issues
+            mkdir -p target/site/jacoco
+            echo "No tests available for coverage analysis" > target/site/jacoco/index.html
+          fi
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
@@ -152,13 +180,32 @@ jobs:
           distribution: "temurin"
           cache: maven
 
+      - name: Check for performance tests
+        id: check-perf-tests
+        run: |
+          if find src/test/java -name "*PerformanceTest.java" 2>/dev/null | grep -q .; then
+            echo "performance_tests_found=true" >> $GITHUB_OUTPUT
+            echo "✅ Performance test files found - running performance tests"
+          else
+            echo "performance_tests_found=false" >> $GITHUB_OUTPUT
+            echo "⚠️ No performance test files found - skipping performance tests"
+          fi
+
       - name: Run performance tests
+        if: steps.check-perf-tests.outputs.performance_tests_found == 'true'
         run: |
           mvn test -B -Dtest="**/*PerformanceTest" -Dmilitary.test.performance.enabled=true
 
+      - name: Skip performance tests (No test files)
+        if: steps.check-perf-tests.outputs.performance_tests_found == 'false'
+        run: |
+          echo "📝 Performance tests skipped - no performance test files found yet"
+          echo "This is normal for projects in the setup phase"
+          echo "Performance tests will run automatically once you add *PerformanceTest.java files"
+
       - name: Upload performance results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.check-perf-tests.outputs.performance_tests_found == 'true'
         with:
           name: performance-test-results
           path: target/performance-reports/

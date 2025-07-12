@@ -1,0 +1,148 @@
+name: 📚 Documentation
+description: Request documentation improvements or additions
+title: "[DOCS] "
+labels: ["documentation"]
+projects: ["o92design/1"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentation Template
+        
+        Use this template to request documentation improvements, additions, or corrections for the Military Coordination System.
+
+  - type: input
+    id: docs-title
+    attributes:
+      label: Documentation Request Title
+      description: A clear title for the documentation need
+      placeholder: e.g., "Add API documentation for Unit data structures"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: docs-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation is needed?
+      options:
+        - "API Documentation - Code documentation"
+        - "User Guide - How to use the system"
+        - "Developer Guide - How to contribute"
+        - "Architecture Documentation - System design"
+        - "Tutorial - Step-by-step guides"
+        - "FAQ - Frequently asked questions"
+        - "README Updates - Project overview"
+        - "Code Comments - Inline documentation"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-component
+    attributes:
+      label: Affected Component
+      description: Which component needs documentation?
+      options:
+        - "core"
+        - "model"
+        - "engine"
+        - "ai"
+        - "util"
+        - "testing"
+        - "project setup"
+        - "general"
+    validations:
+      required: true
+
+  - type: textarea
+    id: docs-description
+    attributes:
+      label: Documentation Description
+      description: Detailed description of what documentation is needed
+      placeholder: |
+        Describe:
+        - What documentation is missing or needs improvement
+        - Who is the target audience (developers, users, contributors)
+        - What specific information should be included
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current Documentation State
+      description: What documentation currently exists (if any)?
+      placeholder: |
+        - Existing documentation location
+        - What's currently covered
+        - What's missing or outdated
+        - Quality issues
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this documentation?
+      options:
+        - "high - critical for development/usage"
+        - "medium - important but not blocking"
+        - "low - nice to have"
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-audience
+    attributes:
+      label: Target Audience
+      description: Who will use this documentation?
+      placeholder: |
+        - New developers joining the project
+        - External contributors
+        - Users of the system
+        - Maintainers
+        - Specific roles or skill levels
+
+  - type: textarea
+    id: content-outline
+    attributes:
+      label: Content Outline
+      description: Suggest an outline or structure for the documentation
+      placeholder: |
+        1. Introduction/Overview
+        2. Prerequisites/Requirements
+        3. Main content sections...
+        4. Examples
+        5. Best practices
+        6. Troubleshooting
+        7. References
+
+  - type: textarea
+    id: examples-needed
+    attributes:
+      label: Examples Needed
+      description: What examples or code samples should be included?
+      placeholder: |
+        - Basic usage examples
+        - Common patterns
+        - Integration examples
+        - Performance optimization examples
+        - Testing examples
+
+  - type: input
+    id: related-issues
+    attributes:
+      label: Related Issues
+      description: Link to related issues or pull requests
+      placeholder: "#issue-number, #pr-number"
+
+  - type: checkboxes
+    id: docs-checklist
+    attributes:
+      label: Documentation Checklist
+      description: Requirements for the documentation
+      options:
+        - label: Documentation should include code examples
+        - label: Documentation should be beginner-friendly
+        - label: Documentation should include best practices
+        - label: Documentation should be kept up-to-date with code changes
+        - label: Documentation should follow project style guidelines

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/o92design/MilitaryCoordination/blob/main/README.md
+    about: Check the project documentation for guidance
+  - name: 🧪 Testing Framework
+    url: https://github.com/o92design/MilitaryCoordination/blob/main/TESTING_FRAMEWORK.md
+    about: Information about testing utilities and best practices

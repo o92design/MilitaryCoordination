@@ -1,0 +1,142 @@
+name: ⚡ Feature/Task
+description: Create a new feature or task for development
+title: "[TASK] "
+labels: ["enhancement"]
+projects: ["o92design/1"]
+assignees:
+  - o92design
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature/Task Template
+        
+        Use this template to create specific development tasks. Tasks should be small enough to complete in 1-3 days.
+        
+        For data-oriented functional programming, consider:
+        - Immutable data structures
+        - Pure functions
+        - Functional composition
+        - Stream operations
+
+  - type: input
+    id: task-title
+    attributes:
+      label: Task Title
+      description: A clear, actionable title for this task
+      placeholder: e.g., "Implement Unit data structure with immutability"
+    validations:
+      required: true
+
+  - type: textarea
+    id: task-description
+    attributes:
+      label: Task Description
+      description: Detailed description of what needs to be implemented
+      placeholder: Describe what this task will accomplish and how it fits into the larger system
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component does this task belong to?
+      options:
+        - "core"
+        - "model"
+        - "engine"
+        - "ai"
+        - "util"
+        - "test"
+        - "documentation"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: task-type
+    attributes:
+      label: Task Type
+      description: What type of development task is this?
+      options:
+        - "feature"
+        - "refactor"
+        - "performance"
+        - "testing"
+        - "documentation"
+        - "bugfix"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define specific, testable criteria for completion
+      placeholder: |
+        - [ ] Implementation follows functional programming principles
+        - [ ] All classes are immutable where appropriate
+        - [ ] Unit tests are written with >80% coverage
+        - [ ] Code passes checkstyle validation
+        - [ ] Documentation is updated
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-approach
+    attributes:
+      label: Technical Approach
+      description: Outline the technical approach for implementation
+      placeholder: |
+        - Use records for immutable data structures
+        - Implement builder patterns where needed
+        - Use Vavr library for functional utilities
+        - Apply stream operations for data processing
+
+  - type: input
+    id: related-epic
+    attributes:
+      label: Related Epic
+      description: Link to the Epic this task belongs to
+      placeholder: "#Epic-Issue-Number"
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List any dependencies on other tasks or external factors
+      placeholder: |
+        - Depends on task #X
+        - Requires completion of Y
+        - Blocked by issue #Z
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: What's the priority level of this task?
+      options:
+        - "high"
+        - "medium"
+        - "low"
+    validations:
+      required: true
+
+  - type: input
+    id: estimated-effort
+    attributes:
+      label: Estimated Effort
+      description: Time estimate for completion
+      placeholder: e.g., "4-6 hours", "1-2 days"
+
+  - type: checkboxes
+    id: task-checklist
+    attributes:
+      label: Task Checklist
+      description: Mark items as complete during development
+      options:
+        - label: Requirements are clearly understood
+        - label: Technical approach is planned
+        - label: Tests will be written (TDD approach)
+        - label: Code will follow functional programming principles
+        - label: Documentation will be updated

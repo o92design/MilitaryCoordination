@@ -120,6 +120,28 @@
 
 ---
 
+## GitHub Issue Templates ✅
+
+Issue templates have been created to standardize issue creation:
+
+### Templates Available:
+- **🎯 Epic Template** - For major feature development
+- **⚡ Feature/Task Template** - For specific development tasks
+- **🐛 Bug Report Template** - For reporting bugs and issues
+- **🚀 Performance Template** - For performance issues and optimizations
+- **📚 Documentation Template** - For documentation requests
+
+### Key Features:
+- **Functional Programming Focus** - Templates emphasize immutability and pure functions
+- **Performance Considerations** - Real-time requirements (60 FPS, <16ms latency)
+- **Component Organization** - Issues categorized by system component
+- **Testing Requirements** - All templates include testing criteria
+- **Project Integration** - Issues automatically added to project board
+
+See `.github/ISSUE_TEMPLATES.md` for detailed usage guidelines.
+
+---
+
 ## GitHub Projects Setup Steps
 
 1. **Create GitHub Repository**

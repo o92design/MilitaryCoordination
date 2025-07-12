@@ -1,0 +1,169 @@
+name: 🚀 Performance Issue
+description: Report performance problems or optimization needs
+title: "[PERFORMANCE] "
+labels: ["performance", "enhancement"]
+projects: ["o92design/1"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Performance Issue Template
+        
+        Use this template to report performance issues or suggest optimizations for the Military Coordination System.
+        
+        For real-time systems, performance is critical. Please provide specific metrics when possible.
+
+  - type: input
+    id: performance-title
+    attributes:
+      label: Performance Issue Title
+      description: A clear title describing the performance issue
+      placeholder: e.g., "Game loop drops below 60 FPS with 1000+ units"
+    validations:
+      required: true
+
+  - type: textarea
+    id: performance-description
+    attributes:
+      label: Performance Issue Description
+      description: Detailed description of the performance problem
+      placeholder: Describe the performance issue and its impact on the system
+    validations:
+      required: true
+
+  - type: dropdown
+    id: performance-type
+    attributes:
+      label: Performance Issue Type
+      description: What type of performance issue is this?
+      options:
+        - "CPU Usage - High CPU consumption"
+        - "Memory Usage - Memory leaks or high memory usage"
+        - "Frame Rate - Low FPS or frame drops"
+        - "Latency - High response times"
+        - "Throughput - Low data processing rate"
+        - "Startup Time - Slow application startup"
+        - "Algorithm Efficiency - Inefficient algorithms"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-component
+    attributes:
+      label: Affected Component
+      description: Which component has the performance issue?
+      options:
+        - "core"
+        - "model" 
+        - "engine - game loop"
+        - "engine - state management"
+        - "ai - unit behavior"
+        - "ai - pathfinding"
+        - "util - data structures"
+        - "util - algorithms"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-metrics
+    attributes:
+      label: Current Performance Metrics
+      description: Provide specific performance measurements
+      placeholder: |
+        - Frame Rate: X FPS (target: 60 FPS)
+        - Memory Usage: X MB (growing over time)
+        - CPU Usage: X% (during peak load)
+        - Response Time: X ms (for operation Y)
+        - Units Processed: X units/second
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-metrics
+    attributes:
+      label: Target Performance Metrics
+      description: What performance levels should be achieved?
+      placeholder: |
+        - Frame Rate: 60 FPS minimum
+        - Memory Usage: Stable, no leaks
+        - CPU Usage: <80% during normal operation
+        - Response Time: <16ms for critical operations
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-scenario
+    attributes:
+      label: Reproduction Scenario
+      description: How to reproduce the performance issue
+      placeholder: |
+        1. Create X number of units
+        2. Run simulation for Y minutes
+        3. Observe performance degradation
+        4. Measure with tools Z
+    validations:
+      required: true
+
+  - type: textarea
+    id: profiling-data
+    attributes:
+      label: Profiling Data
+      description: Include any profiling data or performance analysis
+      placeholder: |
+        - JProfiler results
+        - JVM metrics
+        - Custom timing measurements
+        - Memory allocation patterns
+      render: text
+
+  - type: dropdown
+    id: impact-level
+    attributes:
+      label: Impact Level
+      description: How severely does this affect the system?
+      options:
+        - "critical - system unusable"
+        - "high - significantly impacts user experience" 
+        - "medium - noticeable but manageable"
+        - "low - minor performance concern"
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-optimizations
+    attributes:
+      label: Suggested Optimizations
+      description: If you have ideas for optimization, describe them
+      placeholder: |
+        - Use object pooling for frequently created objects
+        - Implement spatial partitioning for collision detection
+        - Cache expensive calculations
+        - Use parallel streams for data processing
+        - Optimize data structures (e.g., use specialized collections)
+
+  - type: textarea
+    id: testing-environment
+    attributes:
+      label: Testing Environment
+      description: Environment where performance was measured
+      placeholder: |
+        - OS: Windows 11
+        - Java Version: 21.0.7
+        - JVM Args: -Xmx4G -XX:+UseG1GC
+        - Hardware: CPU model, RAM amount
+        - Test Data Size: Number of units, simulation duration
+
+  - type: checkboxes
+    id: performance-checklist
+    attributes:
+      label: Performance Issue Checklist
+      description: Please verify these items
+      options:
+        - label: I have provided specific performance metrics
+          required: true
+        - label: I have included reproduction steps
+          required: true
+        - label: I have tested with realistic data sizes
+          required: true
+        - label: I have considered the impact on real-time requirements
+          required: true

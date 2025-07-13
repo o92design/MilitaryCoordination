@@ -16,6 +16,22 @@ The Military Coordination System is a strategic simulation that manages military
 - **Real-Time Processing**: Continuous game loop with state management
 - **Strategic Coordination**: Complex unit management and decision-making
 
+## [The Game](docs\GAME_DESIGN.MD)
+
+How can you become the best to strategize the battlefield?
+
+As a commander your task is to delegate orders to your units via signal towers. These tasks are gathered and executed by
+the unit whom reports back. It's your job to map this intel and make the best use of it.
+
+PlayerCommander → issues task →
+SignalTower → handles communication and relays →
+Unit Lead → interprets or organizes action →
+Unit(s) → executes field task and returns intel
+
+### The Game Loop
+
+Establish comms → Confirm readiness → Issue command → Perform Task → Visualize outcome.
+
 ## ✨ Features
 
 ### Current Features

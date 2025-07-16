@@ -16,4 +16,4 @@ This is an automatically generated index of all documentation.
 - [Documentation](docs/README.md)
 - [Military Coordination System - Testing Framework](docs/TESTING_FRAMEWORK.md)
 
-Generated on: Wed Jul 16 22:17:58 UTC 2025
+Generated on: Wed Jul 16 22:19:57 UTC 2025

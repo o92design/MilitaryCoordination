@@ -1,16 +1,19 @@
-## Epic Issues to Create
+# Epic Issues to Create
 
-### Epic 1: Project Foundation
+## Epic 1: Project Foundation
+
 **Title**: Project Foundation and Setup
 **Description**: Set up the basic project structure, development environment, and tooling for the Military Coordination System.
 
 **Epic Goals:**
+
 - Establish project structure and build system
 - Configure development environment
 - Set up version control and CI/CD basics
 - Create initial documentation
 
 **Tasks to break down:** ✅ (Done)
+
 - [x] Create Maven project structure
 - [x] Set up Git repository and GitHub integration
 - [x] Configure IDE settings and code formatting
@@ -21,17 +24,20 @@
 
 ---
 
-### Epic 2: Core Data Models
+## Epic 2: Core Data Models
+
 **Title**: Core Data Models and Structures
 **Description**: Implement the fundamental data structures that will represent the game world, units, and commands.
 
 **Epic Goals:**
+
 - Design immutable data structures
 - Create efficient data representations
 - Implement functional programming patterns
 - Establish data validation
 
 **Tasks to break down:**
+
 - [ ] Design Unit data structure (immutable)
 - [ ] Create Position/Coordinate system
 - [ ] Implement Command/Action system
@@ -41,17 +47,20 @@
 
 ---
 
-### Epic 3: Game Loop Engine
+## Epic 3: Game Loop Engine
+
 **Title**: Real-time Game Loop Engine
 **Description**: Build the central processing engine that handles real-time updates and state management.
 
 **Epic Goals:**
+
 - Implement main game loop with proper timing
 - Create efficient state update pipeline
 - Handle event processing and scheduling
 - Provide debugging and monitoring tools
 
 **Tasks to break down:**
+
 - [ ] Implement main game loop with timing control
 - [ ] Create state update pipeline
 - [ ] Design event processing system
@@ -61,17 +70,20 @@
 
 ---
 
-### Epic 4: Unit Coordination System
+## Epic 4: Unit Coordination System
+
 **Title**: Military Unit Coordination
 **Description**: Core military coordination functionality including unit movement, commands, and basic AI.
 
 **Epic Goals:**
+
 - Implement unit movement and positioning
 - Create command execution system
 - Design unit interaction logic
 - Add basic AI behavior
 
 **Tasks to break down:**
+
 - [ ] Implement unit movement algorithms
 - [ ] Create command queue and execution system
 - [ ] Design unit-to-unit communication
@@ -81,17 +93,20 @@
 
 ---
 
-### Epic 5: Resource Management
+## Epic 5: Resource Management
+
 **Title**: Resource and Logistics Management
 **Description**: Handle resources, supplies, and logistics constraints for realistic military operations.
 
 **Epic Goals:**
+
 - Design resource types and consumption
 - Implement supply chain mechanics
 - Create resource constraints on actions
 - Add resource sharing between units
 
 **Tasks to break down:**
+
 - [ ] Design resource types (fuel, ammo, supplies)
 - [ ] Implement resource consumption mechanics
 - [ ] Create supply chain and logistics system
@@ -101,17 +116,20 @@
 
 ---
 
-### Epic 6: Advanced Coordination Features
+## Epic 6: Advanced Coordination Features
+
 **Title**: Advanced Military Operations
 **Description**: Complex coordination scenarios, strategic planning, and performance optimization.
 
 **Epic Goals:**
+
 - Multi-unit coordinated operations
 - Strategic planning system
 - Mission objectives and scenarios
 - Performance optimization
 
 **Tasks to break down:**
+
 - [ ] Implement multi-unit coordinated actions
 - [ ] Create strategic planning interface
 - [ ] Design mission objective system
@@ -125,14 +143,16 @@
 
 Issue templates have been created to standardize issue creation:
 
-### Templates Available:
+### Templates Available
+
 - **🎯 Epic Template** - For major feature development
 - **⚡ Feature/Task Template** - For specific development tasks
 - **🐛 Bug Report Template** - For reporting bugs and issues
 - **🚀 Performance Template** - For performance issues and optimizations
 - **📚 Documentation Template** - For documentation requests
 
-### Key Features:
+### Key Features
+
 - **Functional Programming Focus** - Templates emphasize immutability and pure functions
 - **Performance Considerations** - Real-time requirements (60 FPS, <16ms latency)
 - **Component Organization** - Issues categorized by system component
@@ -175,9 +195,10 @@ See `.github/ISSUE_TEMPLATES.md` for detailed usage guidelines.
    - priority: high, medium, low
    - component: core, engine, ai, model, util
 
-## Ready for GitHub Setup!
+## Ready for GitHub Setup
 
 Your project structure is now ready. Next steps:
+
 1. Initialize Git repository in this folder
 2. Create GitHub repository
 3. Push initial code

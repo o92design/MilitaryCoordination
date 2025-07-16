@@ -16,7 +16,7 @@ The Military Coordination System is a strategic simulation that manages military
 - **Real-Time Processing**: Continuous game loop with state management
 - **Strategic Coordination**: Complex unit management and decision-making
 
-## [The Game](docs\GAME_DESIGN.MD)
+## [The Game](docs/GAME_DESIGN.MD)
 
 How can you become the best to strategize the battlefield?
 

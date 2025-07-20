@@ -15,5 +15,6 @@ This is an automatically generated index of all documentation.
 - [Project Management Plan](docs/PROJECT_PLAN.md)
 - [Documentation](docs/README.md)
 - [Military Coordination System - Testing Framework](docs/TESTING_FRAMEWORK.md)
+- [Dependency Update Summary](update-summary.md)
 
-Generated on: Sun Jul 20 09:29:18 UTC 2025
+Generated on: Sun Jul 20 09:49:02 UTC 2025

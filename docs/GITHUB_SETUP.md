@@ -36,23 +36,23 @@
 - Implement functional programming patterns
 - Establish data validation
 
-**Tasks completed:**
+**Tasks to implement (Fresh Start):**
 
-- [ ] Design Unit data structure (immutable record with hybrid builder/factory)
-- [ ] Create Position/Coordinate system with PositionOperations utility
-- [ ] Implement SignalTower with position and circular transmission range
-- [ ] Create UnitType enum with characteristics and factory methods
-- [ ] Build comprehensive test coverage (50+ tests)
-- [ ] Implement functional update methods and pure operations
+- [ ] Design Unit data structure (simplified for command chain)
+- [ ] Create Position/Coordinate system (essential utility only)
+- [ ] Implement SignalTower with Tower Trust System foundation
+- [ ] Create Command data structure (central to game design)
+- [ ] Design GameState representation (world state management)
+- [ ] Build targeted test coverage for core functionality
 
-**Remaining tasks:**
+**Deferred tasks:**
 
-- [ ] Design World State representation
-- [ ] Implement data serialization (for save/load)
+- [ ] Implement data serialization (for save/load) - Epic 8
+- [ ] Advanced builder patterns - Only if needed
 
 ---
 
-## Epic 3: Signal Tower Network 🎯 PRIORITY 1
+## Epic 3: Signal Tower Network 🎯 PRIORITY 3
 
 **Title**: Tower Trust System™ and Signal Infrastructure
 **Description**: Implement the core signal tower network with trust relationships, signal zones, and communication mechanics based on the game design.
@@ -79,7 +79,7 @@
 
 ---
 
-## Epic 4: Command Coordination System 🎯 PRIORITY 3
+## Epic 4: Command Coordination System 🎯 PRIORITY 4
 
 **Title**: Command Queue and Unit Lead Coordination
 **Description**: Implement the core command system with bandwidth limitations, unit lead interpretation, and the 5-second tick processing from the game design.
@@ -135,7 +135,7 @@
 
 ---
 
-## Epic 6: Intel and Reconnaissance System 🎯 PRIORITY 4
+## Epic 6: Intel and Reconnaissance System 🎯 PRIORITY 5
 
 **Title**: Intelligence Gathering and Strategic Awareness
 **Description**: Expand the intel system to support reconnaissance missions, map knowledge, and strategic decision support based on the game's intel-driven design.
@@ -212,35 +212,39 @@
 
 ## 🚀 Development Strategy and Priority Rationale
 
-### **Recommended Implementation Order:**
+### **Recommended Implementation Order (Fresh Start):**
 
-1. **Epic 3: Signal Tower Network** 🎯 PRIORITY 1
-   - Builds directly on existing SignalTower implementation
-   - Provides foundation for all communication mechanics
-   - Can be tested with simple unit interactions
+1. **Epic 2: Core Data Models** 🎯 PRIORITY 1 (Fresh Implementation)
+   - Design-first approach based on game design
+   - Focus only on essential models for command processing
+   - Build for Tower Trust System™ and 5-second ticks
 
 2. **Epic 5: Game Loop Engine** 🎯 PRIORITY 2
    - **Critical for manual testing** - provides execution environment
-   - Enables real-time testing of tower mechanics
+   - Enables real-time testing of core models
    - Foundation for command processing and state management
    - Allows incremental feature testing
 
-3. **Epic 4: Command System** 🎯 PRIORITY 3
-   - Requires game loop for proper testing
+3. **Epic 3: Signal Tower Network** 🎯 PRIORITY 3
+   - Build on stable data models and game loop
+   - Implement Tower Trust System™ with testing capability
+   - Provides foundation for all communication mechanics
+
+4. **Epic 4: Command System** 🎯 PRIORITY 4
+   - Requires game loop and tower network for proper testing
    - Core player interaction mechanism
    - Integrates tower network with user commands
 
-4. **Epic 6+: Advanced Features** 🎯 PRIORITY 4+
-   - Build on stable game loop and command foundation
+5. **Epic 6+: Advanced Features** 🎯 PRIORITY 5+
+   - Build on stable foundation of core systems
    - Can be developed and tested incrementally
 
-### **Why Game Loop is Priority 2:**
+### **Why Fresh Start Changes Priority Order:**
 
-- ✅ **Manual Testing**: Essential for validating all game mechanics
-- ✅ **Integration Platform**: Provides execution context for features
-- ✅ **Development Velocity**: Faster iteration with running environment
-- ✅ **Performance Validation**: Early detection of timing issues
-- ✅ **Demo Capability**: Show working game mechanics to stakeholders
+- ✅ **Epic 2 First**: Clean data models designed for your specific game mechanics
+- ✅ **Game Loop Second**: Testing foundation before complex tower mechanics
+- ✅ **Tower Network Third**: Can build and test incrementally on stable foundation
+- ✅ **Commands Fourth**: Full integration testing with all systems ready
 
 ---
 
@@ -291,22 +295,82 @@ See `.github/ISSUE_TEMPLATES.md` for detailed usage guidelines.
    - Assign story points or time estimates
 
 5. **Set up Milestones**
-   - Milestone 1: Foundation and Core Infrastructure (Epics 1-2, 5)
-   - Milestone 2: Gameplay Systems (Epics 3-4)
-   - Milestone 3: Advanced Features (Epics 6-8)
+   - Milestone 1: Foundation and Testing Infrastructure (Epics 1-2, 5)
+   - Milestone 2: Core Gameplay Systems (Epics 3-4)
+   - Milestone 3: Advanced Features and Intelligence (Epics 6-8)
 
 6. **Configure Labels**
    - epic, bug, enhancement, documentation
    - priority: high, medium, low
    - component: core, engine, ai, model, util
 
-## Ready for GitHub Setup
+## Ready for GitHub Setup - Fresh Start Implementation
 
-Your project structure is now ready. Next steps:
+Your project structure is now ready for a clean implementation approach. Next steps:
 
-1. Initialize Git repository in this folder
-2. Create GitHub repository
-3. Push initial code
-4. Set up GitHub Projects board
-5. Create the Epic issues listed above
-6. Start working on Epic 1 tasks
+### **Immediate Actions:**
+
+1. **Archive Current Implementation**
+
+   ```bash
+   git checkout -b archive/initial-exploration
+   git push origin archive/initial-exploration
+   ```
+
+2. **Create Fresh Implementation Branch**
+
+   ```bash
+   git checkout main
+   git checkout -b feature/clean-architecture-implementation
+   ```
+
+3. **Update GitHub Issues**
+   - Close existing Epic 2 issues with "Archived - Fresh implementation approach"
+   - Create new Epic 2 issues based on updated task breakdown
+   - Update Epic priorities in GitHub Projects board
+   - Relabel existing issues with new priority order
+
+### **GitHub Issue Updates Required:**
+
+1. **Epic 2: Core Data Models** - Create new issues
+   - Issue: Design Command data structure (Priority 1)
+   - Issue: Implement GameState representation (Priority 1)
+   - Issue: Create simplified Unit model (Priority 1)
+   - Issue: Build Position/Coordinate essentials (Priority 1)
+   - Issue: Implement SignalTower with trust foundation (Priority 1)
+
+2. **Epic 5: Game Loop Engine** - Update existing issues
+   - Change priority labels to "Priority 2"
+   - Add dependency references to Epic 2 issues
+   - Emphasize testing foundation aspects
+
+3. **Epic 3 & 4: Tower Network and Commands** - Update existing issues
+   - Change priority labels to "Priority 3" and "Priority 4"
+   - Add dependencies on game loop completion
+   - Update descriptions to reference clean implementation
+
+### **Project Board Configuration:**
+
+1. **Update GitHub Projects Board**
+   - Create "Fresh Implementation" column
+   - Move archived issues to "Completed/Archived"
+   - Add new Epic 2 issues to "Ready" column
+   - Update milestone assignments
+
+2. **Create Epic Issues**
+   - Update Epic 2 with fresh implementation approach
+   - Ensure all epics reflect new priority order
+   - Link to game design documents (GAME_DESIGN.MD, TOWERS.MD)
+
+### **Next Development Steps:**
+
+1. **Start Fresh Implementation**
+   - Begin with Epic 2: Core Data Models
+   - Focus on Command and GameState first (central to game design)
+   - Build minimal, purpose-driven implementations
+   - Test each model as you build it
+
+2. **Establish Testing Foundation**
+   - Implement Epic 5: Game Loop early
+   - Create interactive testing console
+   - Enable real-time validation of models

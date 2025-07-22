@@ -43,17 +43,20 @@ git checkout -b refactor/issue-20-cleanup-models
 ```
 
 ### 3. Development Process
-1. **Write tests first** (TDD approach)
-   ```bash
-   mvn test  # Should fail initially
-   ```
 
-2. **Implement the feature**
+1. **Implement the feature**
    - Follow the acceptance criteria in the GitHub issue
    - Write clean, well-documented code
    - Follow existing code patterns
 
+2. **Write tests when you have a clear case of what to test in order to stabilize the product**
+
+   ```bash
+   mvn test
+   ```
+
 3. **Validate your work**
+
    ```bash
    # Run tests
    mvn clean test

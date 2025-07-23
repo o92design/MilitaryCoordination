@@ -81,7 +81,8 @@ class CommandSystemTest {
             int cost = CommandSystem.calculateCost(command, 0, 100, 0);
 
             // Dynamically verify the formula: baseCost * (1 + trustMultiplier + stressMultiplier + signalMultiplier)
-            int expectedCost = CommandSystem.getBaseCost(CommandType.EMERGENCY) * (1 + 1.0 + 1.0 + 1.0);
+
+            int expectedCost = (CommandSystem.getBaseCost(CommandType.EMERGENCY) * (int) (1 + 1.0 + 1.0 + 1.0));
             assertThat(cost).isEqualTo(expectedCost);
         }
 

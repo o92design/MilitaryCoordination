@@ -5,11 +5,14 @@ import java.time.Instant;
 import com.military.coordination.model.Command;
 import com.military.coordination.model.CommandType;
 
+
 /**
  * Functional command system providing pure functions for command operations.
  * Separates business logic from data structures following functional programming principles.
  */
 public final class CommandSystem {
+    public static final double MULTIPLIER_BASE = 100;
+    public static final int MINIMUM_BASE_COST = 1;
 
     private CommandSystem() {
         // Utility class - no instances
@@ -54,11 +57,11 @@ public final class CommandSystem {
         int baseCost = getBaseCost(command.type());
 
         // Adjust based on unit state (higher trust/lower stress = lower cost)
-        double trustMultiplier = (100 - unitTrust) / 100.0;
-        double stressMultiplier = unitStress / 100.0;
-        double signalMultiplier = (100 - signalStrength) / 100.0;
+        double trustMultiplier = (MULTIPLIER_BASE - unitTrust) / MULTIPLIER_BASE;
+        double stressMultiplier = unitStress / MULTIPLIER_BASE;
+        double signalMultiplier = (MULTIPLIER_BASE - signalStrength) / MULTIPLIER_BASE;
 
-        return Math.max(1, (int) (baseCost * (1 + trustMultiplier + stressMultiplier + signalMultiplier)));
+        return Math.max(MINIMUM_BASE_COST, (int) (baseCost * (MINIMUM_BASE_COST + trustMultiplier + stressMultiplier + signalMultiplier)));
     }
 
     /**

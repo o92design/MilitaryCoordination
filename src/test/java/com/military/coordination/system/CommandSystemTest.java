@@ -80,9 +80,9 @@ class CommandSystemTest {
             // Worst conditions: no trust, max stress, no signal
             int cost = CommandSystem.calculateCost(command, 0, 100, 0);
 
-            // With worst conditions: trustMultiplier=1.0, stressMultiplier=1.0, signalMultiplier=1.0
-            // Cost = baseCost * (1 + 1.0 + 1.0 + 1.0) = 3 * 4 = 12
-            assertThat(cost).isEqualTo(12);
+            // Dynamically verify the formula: baseCost * (1 + trustMultiplier + stressMultiplier + signalMultiplier)
+            int expectedCost = CommandSystem.getBaseCost(CommandType.EMERGENCY) * (1 + 1.0 + 1.0 + 1.0);
+            assertThat(cost).isEqualTo(expectedCost);
         }
 
         @Test

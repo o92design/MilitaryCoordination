@@ -368,7 +368,7 @@ class CommandTest {
             var unitStress = 20; // Low stress = lower cost
             var signalStrength = 90; // Strong signal = lower cost
 
-            int baseCostForRecon = 2; // Base cost for RECONNAISSANCE
+            int baseCostForRecon = CommandSystem.getBaseCost(CommandType.RECONNAISSANCE); // Base cost for RECONNAISSANCE
             int calculatedCost = CommandSystem.calculateCost(command, unitTrust, unitStress, signalStrength);
 
             // With high trust, low stress, strong signal, cost should be close to base cost

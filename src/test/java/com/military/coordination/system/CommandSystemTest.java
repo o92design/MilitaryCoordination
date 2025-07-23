@@ -1,6 +1,7 @@
 package com.military.coordination.system;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,7 +23,7 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should detect when command has not timed out")
         void shouldDetectWhenCommandHasNotTimedOut() {
-            var command = new Command("CMD-001", CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(10));
+            var command = new Command(UUID.randomUUID(), CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(10));
             var currentTime = command.createdAt().plusSeconds(30); // 30 seconds after creation
 
             assertThat(CommandSystem.hasTimedOut(command, currentTime)).isFalse();
@@ -31,7 +32,7 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should detect when command has timed out")
         void shouldDetectWhenCommandHasTimedOut() {
-            var command = new Command("CMD-001", CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(5));
+            var command = new Command(UUID.randomUUID(), CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(5));
             var currentTime = command.createdAt().plus(Duration.ofMinutes(10)); // 10 minutes after creation
 
             assertThat(CommandSystem.hasTimedOut(command, currentTime)).isTrue();
@@ -40,7 +41,7 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should handle exact timeout boundary")
         void shouldHandleExactTimeoutBoundary() {
-            var command = new Command("CMD-001", CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(5));
+            var command = new Command(UUID.randomUUID(), CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(5));
             var exactTimeoutTime = command.createdAt().plus(command.timeout());
 
             assertThat(CommandSystem.hasTimedOut(command, exactTimeoutTime)).isFalse(); // Exactly at timeout = not timed out yet
@@ -65,7 +66,7 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should calculate cost with perfect conditions")
         void shouldCalculateCostWithPerfectConditions() {
-            var command = new Command("CMD-001", CommandType.STATUS_REPORT, "GRID-17", Priority.NORMAL, Duration.ofMinutes(10));
+            var command = new Command(UUID.randomUUID(), CommandType.STATUS_REPORT, "GRID-17", Priority.NORMAL, Duration.ofMinutes(10));
             // Perfect conditions: max trust, no stress, perfect signal
             int cost = CommandSystem.calculateCost(command, 100, 0, 100);
 
@@ -75,7 +76,7 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should calculate cost with worst conditions")
         void shouldCalculateCostWithWorstConditions() {
-            var command = new Command("CMD-001", CommandType.EMERGENCY, "GRID-17", Priority.HIGH, Duration.ofMinutes(10));
+            var command = new Command(UUID.randomUUID(), CommandType.EMERGENCY, "GRID-17", Priority.HIGH, Duration.ofMinutes(10));
             // Worst conditions: no trust, max stress, no signal
             int cost = CommandSystem.calculateCost(command, 0, 100, 0);
 
@@ -87,7 +88,7 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should validate percentage inputs")
         void shouldValidatePercentageInputs() {
-            var command = new Command("CMD-001", CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(10));
+            var command = new Command(UUID.randomUUID(), CommandType.RECONNAISSANCE, "GRID-17", Priority.NORMAL, Duration.ofMinutes(10));
 
             assertThatThrownBy(() -> CommandSystem.calculateCost(command, -1, 50, 50))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -110,9 +111,9 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should return correct priority scores")
         void shouldReturnCorrectPriorityScores() {
-            var highPriorityCommand = new Command("CMD-001", CommandType.EMERGENCY, "GRID-17", Priority.HIGH, Duration.ofMinutes(5));
-            var normalPriorityCommand = new Command("CMD-002", CommandType.RECONNAISSANCE, "GRID-18", Priority.NORMAL, Duration.ofMinutes(10));
-            var lowPriorityCommand = new Command("CMD-003", CommandType.STATUS_REPORT, "UNIT-ALPHA", Priority.LOW, Duration.ofMinutes(15));
+            var highPriorityCommand = new Command(UUID.randomUUID(), CommandType.EMERGENCY, "GRID-17", Priority.HIGH, Duration.ofMinutes(5));
+            var normalPriorityCommand = new Command(UUID.randomUUID(), CommandType.RECONNAISSANCE, "GRID-18", Priority.NORMAL, Duration.ofMinutes(10));
+            var lowPriorityCommand = new Command(UUID.randomUUID(), CommandType.STATUS_REPORT, "UNIT-ALPHA", Priority.LOW, Duration.ofMinutes(15));
 
             assertThat(CommandSystem.getPriorityScore(highPriorityCommand)).isEqualTo(1);
             assertThat(CommandSystem.getPriorityScore(normalPriorityCommand)).isEqualTo(2);
@@ -122,9 +123,9 @@ class CommandSystemTest {
         @Test
         @DisplayName("Should identify urgent commands")
         void shouldIdentifyUrgentCommands() {
-            var emergencyCommand = new Command("CMD-001", CommandType.EMERGENCY, "GRID-17", Priority.NORMAL, Duration.ofMinutes(5));
-            var highPriorityCommand = new Command("CMD-002", CommandType.RECONNAISSANCE, "GRID-18", Priority.HIGH, Duration.ofMinutes(10));
-            var normalCommand = new Command("CMD-003", CommandType.STATUS_REPORT, "UNIT-ALPHA", Priority.NORMAL, Duration.ofMinutes(15));
+            var emergencyCommand = new Command(UUID.randomUUID(), CommandType.EMERGENCY, "GRID-17", Priority.NORMAL, Duration.ofMinutes(5));
+            var highPriorityCommand = new Command(UUID.randomUUID(), CommandType.RECONNAISSANCE, "GRID-18", Priority.HIGH, Duration.ofMinutes(10));
+            var normalCommand = new Command(UUID.randomUUID(), CommandType.STATUS_REPORT, "UNIT-ALPHA", Priority.NORMAL, Duration.ofMinutes(15));
 
             assertThat(CommandSystem.isUrgent(emergencyCommand)).isTrue(); // Emergency type
             assertThat(CommandSystem.isUrgent(highPriorityCommand)).isTrue(); // High priority

@@ -2,13 +2,14 @@ package com.military.coordination.model;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Command data structure representing military orders in the Tower Trust System.
  * Immutable record with functional update methods for state management.
  */
 public record Command(
-    String id,                // Unique identifier for the command
+    UUID id,                // Unique identifier for the command
     CommandType type,         // Type of command (e.g., RECONNAISSANCE, MOVE)
     String target,            // Target area or unit for the command
     Priority priority,        // Priority level of the command
@@ -18,14 +19,14 @@ public record Command(
 ) {
 
     // Constructor for creating new commands (most common use case)
-    public Command(String id, CommandType type, String target, Priority priority, Duration timeout) {
+    public Command(UUID id, CommandType type, String target, Priority priority, Duration timeout) {
         this(id, type, target, priority, timeout, Instant.now(), CommandStatus.PENDING);
     }
 
     // Compact constructor for validation
     public Command {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("Command ID cannot be null or empty");
+        if (id == null) {
+            throw new IllegalArgumentException("Command ID cannot be null");
         }
         if (target == null || target.isBlank()) {
             throw new IllegalArgumentException("Target cannot be null or empty");

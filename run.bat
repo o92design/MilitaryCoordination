@@ -1,21 +1,31 @@
 @echo off
-echo Building and Running Military Coordination System...
+echo Building and Running LibGDX Military Coordination System...
 echo.
 
-echo [1/3] Compiling Java sources...
-javac -cp src/main/java src/main/java/com/military/coordination/model/*.java src/main/java/com/military/coordination/core/Main.java
-
+REM Check if Maven is available
+mvn --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Compilation failed!
+    echo Maven is not installed or not in PATH!
+    echo Please install Maven or use VS Code with F5 to launch.
     pause
     exit /b 1
 )
 
-echo [2/3] Compilation successful!
-echo [3/3] Running application...
+echo [1/3] Building project with Maven...
+mvn clean compile dependency:copy-dependencies -f desktop\pom.xml
+
+if %errorlevel% neq 0 (
+    echo Build failed!
+    pause
+    exit /b 1
+)
+
+echo [2/3] Build successful!
+echo [3/3] Running LibGDX Desktop application...
 echo.
 
-java -cp src/main/java com.military.coordination.core.Main
+REM Run the LibGDX desktop launcher
+java -cp "desktop\target\classes;core\target\classes;desktop\target\dependency\*" com.military.coordination.DesktopLauncher
 
 echo.
 echo Application finished.

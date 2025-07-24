@@ -17,4 +17,4 @@ This is an automatically generated index of all documentation.
 - [Military Coordination System - Testing Framework](docs/TESTING_FRAMEWORK.md)
 - [Dependency Update Summary](update-summary.md)
 
-Generated on: Thu Jul 24 10:59:06 UTC 2025
+Generated on: Thu Jul 24 13:11:29 UTC 2025

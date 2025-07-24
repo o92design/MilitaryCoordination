@@ -1,37 +1,34 @@
 @echo off
-REM Simple build script for Military Coordination System
-REM This script compiles and runs tests without requiring Maven
+REM Build script for Military Coordination System (LibGDX Multi-Module Project)
+REM This script uses Maven to build the core and desktop modules
 
 echo Building Military Coordination System...
 
-REM Clean previous build (if exists)
-if exist "target" (
-    echo Cleaning previous build...
-    rmdir /s /q target
-)
-
-REM Create output directories
-if not exist "target\classes" mkdir target\classes
-if not exist "target\test-classes" mkdir target\test-classes
-
-REM Compile main source files
-echo Compiling main sources...
-javac -d target\classes -cp "src\main\java" src\main\java\com\military\coordination\model\*.java src\main\java\com\military\coordination\core\*.java
-
+REM Check if Maven is available
+mvn --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Compilation failed!
+    echo Maven is not installed or not in PATH!
+    echo Please install Maven to build this project.
+    echo Alternatively, use VS Code with F5 to launch.
     pause
     exit /b 1
 )
 
-REM Note: To run tests, you'll need to download JUnit 5 JARs manually
-REM or use an IDE with built-in test runner
+REM Build all modules using Maven
+echo Building all modules with Maven...
+mvn clean compile
+
+if %errorlevel% neq 0 (
+    echo Build failed!
+    pause
+    exit /b 1
+)
 
 echo Build complete!
 echo.
-echo To run the application: java -cp target\classes com.military.coordination.core.Main
-echo To run tests, use your IDE or install Maven.
-echo For VS Code: Install "Extension Pack for Java" and use the Test Explorer.
-echo For IntelliJ IDEA: Right-click on test files and select "Run Tests".
+echo Available launch options:
+echo 1. Use VS Code: Press F5 and select "LibGDX Desktop - Release"
+echo 2. Use Maven: mvn exec:java (from desktop directory)
+echo 3. Use command line: java -cp "desktop\target\classes;core\target\classes;desktop\target\dependency\*" com.military.coordination.DesktopLauncher
 echo.
 pause

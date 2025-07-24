@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.military.coordination</groupId>
+        <artifactId>military-coordination-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>military-coordination-desktop</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Military Coordination - Desktop</name>
+    <description>Desktop launcher for the tactical command game</description>
+
+    <dependencies>
+        <!-- Core module -->
+        <dependency>
+            <groupId>com.military.coordination</groupId>
+            <artifactId>military-coordination-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- LibGDX Desktop backend -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-backend-lwjgl3</artifactId>
+        </dependency>
+
+        <!-- LWJGL Platform natives -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-platform</artifactId>
+            <classifier>natives-desktop</classifier>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Exec Maven Plugin - desktop-specific configuration -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.military.coordination.DesktopLauncher</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

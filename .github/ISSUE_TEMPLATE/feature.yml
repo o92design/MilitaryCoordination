@@ -44,6 +44,7 @@ body:
       description: Which component does this task belong to?
       options:
         - "core"
+        - "component"
         - "model"
         - "engine"
         - "ai"

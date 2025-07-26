@@ -10,6 +10,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -32,6 +33,7 @@ public class MilitaryCoordinationGame extends ApplicationAdapter {
     private BitmapFont font;
     private Stage stage;
     private Skin skin;
+    private Texture background;
 
     // Game state
     private ScheduledExecutorService gameLoop;
@@ -50,6 +52,8 @@ public class MilitaryCoordinationGame extends ApplicationAdapter {
         stage = new Stage(new ScreenViewport());
         skin = new Skin();
         skin.add("default-font", font);
+
+        background = new Texture(Gdx.files.internal("images/terrain/maps/lakes.png"));
 
         // Create UI layout
         createUI();
@@ -133,6 +137,7 @@ public class MilitaryCoordinationGame extends ApplicationAdapter {
 
         // Draw additional info
         batch.begin();
+        batch.draw(background,0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         font.draw(batch, gameStatus, 20, Gdx.graphics.getHeight() - 100.0f);
         font.draw(batch, "Tick: " + tickCount, 20, Gdx.graphics.getHeight() - 130.0f);
         font.draw(batch, "Press ESC to exit", 20, 50.0f);

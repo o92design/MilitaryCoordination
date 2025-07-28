@@ -1,6 +1,20 @@
+
 # GitHub Actions Workflows
 
 This document describes all the automated workflows configured for the Military Coordination project. These workflows provide comprehensive CI/CD, security, quality assurance, and maintenance automation.
+
+## 🗂️ Jira Integration
+
+The Military Coordination project uses **Jira** for issue tracking, sprint planning, and project management:
+
+- All new features, bugs, and tasks are tracked in the project’s Jira board: [MC Jira Board](https://o92design.atlassian.net/jira/software/projects/MC/boards/9)
+- Developers should reference Jira issue keys in commit messages and pull requests for traceability.
+- Sprint planning, backlog grooming, and progress tracking are managed in Jira.
+
+### Workflow Guidelines
+- Create and update issues in Jira, not GitHub Issues/Projects.
+- Link pull requests to Jira issues using the issue key (e.g., `MC-123`).
+- Use Jira for sprint boards, epics, and release planning.
 
 ## 🔄 Workflow Overview
 

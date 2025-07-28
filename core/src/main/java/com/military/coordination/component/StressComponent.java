@@ -18,14 +18,4 @@ public record StressComponent(int stress) {
             throw new IllegalArgumentException("Stress cannot be negative");
         }
     }
-
-    /**
-     * Returns a new StressComponent with updated stress value.
-     *
-     * @param newStress the new stress value (must be non-negative)
-     * @return a new StressComponent with the given stress value
-     */
-    public StressComponent withStress(final int newStress) {
-        return new StressComponent(newStress);
-    }
 }

@@ -5,10 +5,10 @@ import java.time.Instant;
 import com.military.coordination.model.Command;
 import com.military.coordination.model.CommandType;
 
-
 /**
  * Functional command system providing pure functions for command operations.
- * Separates business logic from data structures following functional programming principles.
+ * Separates business logic from data structures following functional
+ * programming principles.
  */
 public final class CommandSystem {
     public static final double MULTIPLIER_BASE = 100;
@@ -22,7 +22,7 @@ public final class CommandSystem {
      * Check if a command has exceeded its timeout duration.
      * Pure function - no side effects, deterministic for given inputs.
      *
-     * @param command The command to check
+     * @param command     The command to check
      * @param currentTime The current time for timeout comparison
      * @return true if the command has timed out
      */
@@ -41,9 +41,9 @@ public final class CommandSystem {
      * Calculate command execution cost based on game mechanics.
      * Pure function implementing the Tower Trust System cost algorithm.
      *
-     * @param command The command to calculate cost for
-     * @param unitTrust Trust level of the unit (0-100)
-     * @param unitStress Stress level of the unit (0-100)
+     * @param command        The command to calculate cost for
+     * @param unitTrust      Trust level of the unit (0-100)
+     * @param unitStress     Stress level of the unit (0-100)
      * @param signalStrength Signal strength for transmission (0-100)
      * @return Calculated cost for command execution
      */
@@ -61,7 +61,8 @@ public final class CommandSystem {
         double stressMultiplier = unitStress / MULTIPLIER_BASE;
         double signalMultiplier = (MULTIPLIER_BASE - signalStrength) / MULTIPLIER_BASE;
 
-        return Math.max(MINIMUM_BASE_COST, (int) (baseCost * (MINIMUM_BASE_COST + trustMultiplier + stressMultiplier + signalMultiplier)));
+        return Math.max(MINIMUM_BASE_COST,
+                (int) (baseCost * (MINIMUM_BASE_COST + trustMultiplier + stressMultiplier + signalMultiplier)));
     }
 
     /**
@@ -91,7 +92,7 @@ public final class CommandSystem {
      */
     public static boolean isUrgent(Command command) {
         return command.priority() == com.military.coordination.model.Priority.HIGH
-            || command.type() == CommandType.EMERGENCY;
+                || command.type() == CommandType.EMERGENCY;
     }
 
     /**
